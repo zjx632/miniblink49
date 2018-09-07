@@ -336,6 +336,15 @@ LRESULT PlatformEventHandler::fireMouseEvent(HWND hWnd, UINT message, WPARAM wPa
             webMouseEvent.button = WebMouseEvent::ButtonRight;
             webMouseEvent.modifiers |= WebMouseEvent::RightButtonDown;
             break;
+		case WM_LBUTTONDBLCLK:
+			webMouseEvent.button = WebMouseEvent::ButtonLeft;
+			break;
+		case WM_MBUTTONDBLCLK:
+			webMouseEvent.button = WebMouseEvent::ButtonMiddle;
+			break;
+		case WM_RBUTTONDBLCLK:
+			webMouseEvent.button = WebMouseEvent::ButtonRight;
+			break;
         }
         m_isDraggableRegionNcHitTest = false;
         webMouseEvent.type = WebInputEvent::MouseDown;
