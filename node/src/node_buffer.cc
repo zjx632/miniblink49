@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <limits.h>
+#include <stdlib.h>
 
 #define BUFFER_ID 0xB0E4
 
