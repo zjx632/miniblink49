@@ -177,8 +177,7 @@ base::DictionaryValue* ClipboardUtil::getCustomPlainTexts(IDataObject* dataObjec
     
     base::JSONReader jsonReader;
     std::unique_ptr<base::Value> jsonVal = jsonReader.ReadToValue(json);
-
-    if (!jsonVal->IsType(base::Value::TYPE_DICTIONARY))
+    if (!jsonVal || !jsonVal->IsType(base::Value::TYPE_DICTIONARY))
         return nullptr;
 
     base::DictionaryValue* dictVal = nullptr;
@@ -208,18 +207,19 @@ HGLOBAL ClipboardUtil::createGlobalData(const std::string& url, const std::strin
     return cbData;
 }
 
-HGLOBAL ClipboardUtil::createGlobalData(const std::string& str)
-{
-    std::wstring strW(base::UTF8ToWide(str));
-    HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, ((strW.size() + 1) * sizeof(wchar_t)));
-    if (data) {
-        wchar_t* rawData = static_cast<wchar_t*>(::GlobalLock(data));
-        memcpy(rawData, &strW[0], strW.size() * sizeof(wchar_t));
-        rawData[strW.size()] = L'\0';
-        ::GlobalUnlock(data);
-    }
-    return data;
-}
+// template <typename charT> HGLOBAL ClipboardUtil::createGlobalData(const std::basic_string<charT>& str)
+// {
+//     std::wstring strW(base::UTF8ToWide(str));
+// 
+//     HGLOBAL data = ::GlobalAlloc(GMEM_MOVEABLE, ((strW.size() + 1) * sizeof(wchar_t)));
+//     if (data) {
+//         wchar_t* rawData = static_cast<wchar_t*>(::GlobalLock(data));
+//         memcpy(rawData, &strW[0], strW.size() * sizeof(wchar_t));
+//         rawData[strW.size()] = L'\0';
+//         ::GlobalUnlock(data);
+//     }
+//     return data;
+// }
 
 std::string ClipboardUtil::htmlToCFHtml(const std::string& html, const std::string& baseUrl)
 {

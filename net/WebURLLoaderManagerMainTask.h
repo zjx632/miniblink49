@@ -14,7 +14,7 @@
 #include "third_party/WebKit/public/web/WebLocalFrame.h"
 #include "wke/wkeWebView.h"
 
-void wkeDeleteWillSendRequestInfo(wkeWebView webWindow, wkeWillSendRequestInfo* info);
+void WKE_CALL_TYPE wkeDeleteWillSendRequestInfo(wkeWebView webWindow, wkeWillSendRequestInfo* info);
 
 namespace net {
 
@@ -574,7 +574,7 @@ static bool dispatchDownloadToWke(WebPage* page, WebURLLoaderInternal* job, cons
     return true;
 }
 
-static bool dispatchResponseToWke(WebURLLoaderInternal* job, const AtomicString& contentType)
+static bool dispatchResponseToWke(WebURLLoaderInternal* job, const AtomicString& contentType, bool isRedirect)
 {
     RequestExtraData* requestExtraData = reinterpret_cast<RequestExtraData*>(job->firstRequest()->extraData());
     if (!requestExtraData) { //没有的情况可能是客户端用导出接口发送的请求，也可能是即将关闭程序
@@ -605,7 +605,7 @@ static bool dispatchResponseToWke(WebURLLoaderInternal* job, const AtomicString&
             }
         }
 
-        if (requestExtraData->isDownload() || isDownloadResponse(job, contentType)) {
+        if (requestExtraData->isDownload() || (isDownloadResponse(job, contentType) && !isRedirect)) {
             if (dispatchDownloadToWke(page, job, urlBuf.data(), contentType, requestExtraData->getDownloadName())) {
                 result = true;
                 break;
@@ -691,6 +691,9 @@ static void doRedirect(WebURLLoaderInternal* job, const String& location, MainTa
         job->m_isRedirection = false;
 
         if (job->m_isWkeNetSetDataBeSetted) {
+            if (job->m_customHeaders)
+                curl_slist_free_all(job->m_customHeaders);
+            job->m_customHeaders = nullptr;
             WebURLLoaderManager::sharedInstance()->cancelWithHookRedirect(job);
             Platform::current()->currentThread()->scheduler()->postLoadingTask(FROM_HERE, new HookAsynTask(WebURLLoaderManager::sharedInstance(), job->m_id, false));
             return;
@@ -735,7 +738,7 @@ static bool setHttpResponseDataToJobWhenDidReceiveResponseOnMainThread(WebURLLoa
 //         textEncodingName = "utf-8";
     job->m_response.setTextEncodingName(textEncodingName);
 #if (defined ENABLE_WKE) && (ENABLE_WKE == 1)
-    if (dispatchResponseToWke(job, contentType))
+    if (dispatchResponseToWke(job, contentType, isHttpRedirect(args->httpCode)))
         return false;
 #endif
     if (equalIgnoringCase((String)(job->m_response.mimeType()), "multipart/x-mixed-replace")) {
