@@ -682,6 +682,13 @@ void WKE_CALL_TYPE wkeRepaintIfNeeded(wkeWebView webView)
         webView->repaintIfNeeded();
 }
 
+void WKE_CALL_TYPE wkeRepaint(wkeWebView webView)
+{
+	wke::checkThreadCallIsValid(__FUNCTION__);
+	if (webView)
+		webView->repaint();
+}
+
 HDC WKE_CALL_TYPE wkeGetViewDC(wkeWebView webView)
 {
     wke::checkThreadCallIsValid(__FUNCTION__);

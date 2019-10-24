@@ -1015,6 +1015,7 @@ public:
     ITERATOR11(void, wkePaint2, wkeWebView webView, void* bits, int bufWid, int bufHei, int xDst, int yDst, int w, int h, int xSrc, int ySrc, bool bCopyAlpha, "") \
     ITERATOR3(void, wkePaint, wkeWebView webView, void* bits, int pitch, "") \
     ITERATOR1(void, wkeRepaintIfNeeded, wkeWebView webView, "") \
+    ITERATOR1(void, wkeRepaint, wkeWebView webView, "") \
     ITERATOR1(HDC, wkeGetViewDC, wkeWebView webView, "") \
     ITERATOR1(HWND, wkeGetHostHWND, wkeWebView webView, "") \
     \

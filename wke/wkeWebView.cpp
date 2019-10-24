@@ -479,6 +479,11 @@ void CWebView::repaintIfNeeded()
     m_dirtyArea = blink::IntRect();
 }
 
+void CWebView::repaint()
+{
+	m_webPage->repaintRequested(blink::IntRect(), true);
+}
+
 HDC CWebView::viewDC()
 {
     return m_webPage->viewDC();

@@ -193,6 +193,8 @@ public:
     void paint(void* bits, int pitch) override;
     void paint(void* bits, int bufWid, int bufHei, int xDst, int yDst, int w, int h, int xSrc, int ySrc, bool fKeepAlpha);
     void repaintIfNeeded();
+	void repaint();
+
     HDC viewDC();
     HWND windowHandle() const;
     void setHandle(HWND wnd);
